@@ -11,7 +11,7 @@ import io
 from six import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 from six.moves.urllib.request import urlopen
-
+import threading
 import sys
 
 class Resquest(BaseHTTPRequestHandler):
@@ -90,10 +90,15 @@ def load_image_into_numpy_array(path):
 detector = tf.compat.v1.saved_model.load_v2('./faster_rcnn_inception_resnet_v2_640x640_1')
 detector._is_hub_module_v1 = False
 
-if __name__ == '__main__':
-#    _init_module()
+def start_server():
     host = ('', 9001)
     server = HTTPServer(host, Resquest)
     print("Starting server, listen at: %s:%s" % host)
-    server.serve_forever()
+    #server.serve_forever()
+    thread = threading.Thread(target=server.serve_forever);
+    thread.start();
 
+start_server()
+
+millis = int(round(time.time() * 1000))
+print("The timestamp is: %s" %(millis))
